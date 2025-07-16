@@ -1,0 +1,12 @@
+tidyverse
+data.table
+foreach
+doParallel
+ggplot2
+GenomicRanges
+caret
+rtracklayer
+glmnet
+pryr
+rstudioapi
+preprocessCore

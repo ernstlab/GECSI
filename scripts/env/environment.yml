@@ -1,0 +1,29 @@
+name: gecsi-r
+channels:
+  - conda-forge
+  - bioconda
+  - defaults  # add this as a fallback
+dependencies:
+  - r-base=4.1.0
+  - r-pacman
+  - r-readr
+  - r-devtools
+  - r-optparse
+  - r-remotes
+  - r-glmnet
+  - r-caret
+  - r-ggplot2
+  - r-tidyverse
+  - r-data.table
+  - r-foreach
+  - r-doparallel
+  - bioconductor-genomicranges
+  - bioconductor-rtracklayer
+  - bioconductor-preprocesscore
+  - r-pryr
+  - r-fastdummies
+  - pandoc
+  - libgit2
+  - bedtools
+  - htslib
+  - tabix
