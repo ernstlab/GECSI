@@ -1,3 +1,5 @@
+# Gene Expression-based Chromatin State Imputation (GECSI) #
+
 This is Gene Expression-based Chromatin State Imputation (GECSI) program. This program is used for generating chromatin state annotations from biosamples that have gene expression data. Here are the basic instructions for installing and using this program.
 
 ## Quick Guide ##
@@ -17,6 +19,7 @@ This will create a folder named GECSI in your current working directory. You can
 GECSI is a tool based on R version 4.1.0 with the requirement of installing multiple packages. In order to avoid potential environment conflicts, we recommend that you install the tool in a clean environment by running:
 
 `chmod +x install_GECSI.sh`
+
 `install_GECSI.sh`
 
 Since it installs the R environment and all related packages from scratch, it takes ~30min to finish.
@@ -45,11 +48,45 @@ In order to make sure that GECSI is correctly installed, we recommend that you r
 
 This example script will run for about 30 minutes in an intel 32G CPU core. It will train toy models in 50 epigenomes and apply them in 10 epigenomes. Output of this example script will be stored in `example_results/` and log output will be stored in `log/`
 
+Once this is finished, it means that GECSI is correctly set up!
+
 ## How to use the program? ##
 
 ### 1. Use previously trained models to apply to your gene expression data
 
+#### Step 1: Download pre-trained models and training gene expression data ####
 
+You can download all models we trained using the International Human Epigenome Consortium (IHEC) using
+
+`mkdir -p your_wd/your_proj_name/`
+
+`wget xxxxxx.com/Train_0.zip`
+
+`unzip Train_0.zip`
+
+#### Step 2: Prepare your gene expression data where GECSI needs to be applied ###
+You will need to prepare your gene expression data in the following format: (you may check `data/gene_exp_test.tsv` for the correct format):
+
+A tab-delimited file where each row is a gene and each column is a sample. The first row must be the sample names, and the first column must be **gene symbols**.
+
+Note: We currently only support human gene expression data and the identifier needs to be gene symbols (instead of Ensembl IDs) to make it compatible with the pre-trained data.
+
+Example:
+
+```
+Sample1	Sample2	Sample3
+TP53	5.2	    6.1	    4.8
+BRCA1	2.3	    2.9	    3.0
+GAPDH	10.1	11.0	9.8
+```
+Then, you will need to run these steps sequentially:
+
+#### 1. Compute distance between new samples and training samples ####
+
+`./GECSI.sh -c compute_dist -d --gexp-ref "/path/to/reference_gene_expression" --gexp-apply "/path/to/reference_gene_expression" --proj-name "${your_proj_name}"`
+
+
+### 2. Train your own model using your gene expression and chromatin state data ###
 After making sure that GECSI is correctly set up, you can use the program to train and apply your model now! Check "-h" or "--help" for help with the options. 
 
 

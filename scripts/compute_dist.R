@@ -90,6 +90,16 @@ if(opt$verbose){
   message(sprintf("Number of samples not in reference: %s", length(test_only_samples)))
 }
 if (length(test_only_samples) > 0){
+  train_genes <- row.names(gene_exp_train)
+  test_genes <- row.names(gene_exp_test)
+  common_genes <- intersect(train_genes, test_genes)
+  if (length(common_genes) == 0){
+    message("No common genes found between training and testing datasets. Please check your input files.")
+    quit(save = "no", status = 1, runLast = FALSE)
+  }
+  gene_exp_train <- gene_exp_train[common_genes, , drop=FALSE]
+  gene_exp_test <- gene_exp_test[common_genes, , drop=FALSE]
+
   gene_exp <- cbind(gene_exp_train, gene_exp_test[,test_only_samples])
   gene_exp_mat <- as.matrix(gene_exp)
   normalized_data <- normalize.quantiles(gene_exp_mat)
