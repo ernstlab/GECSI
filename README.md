@@ -50,13 +50,11 @@ This example script will run for about 30 minutes in an intel 32G CPU core. It w
 
 Once this is finished, it means that GECSI is correctly set up!
 
-## How to use the program? ##
-
-### Guide for using previously trained models to apply to your gene expression data
+## Guide for using previously trained models to apply to your gene expression data ##
 
 Please follow the below steps sequentially and closely.
 
-#### Step 1: Download pre-trained models and training gene expression data ####
+### Step 1: Download pre-trained models and training gene expression data ###
 
 You need to download all models we trained using the International Human Epigenome Consortium (IHEC) into your working directory. 
 
@@ -82,7 +80,7 @@ and the names of training samples using
 
 `wget placeholder_for_zenodo/training_sample_names.txt -O training_sample_names.txt`
 
-#### Step 2: Prepare your gene expression data where GECSI needs to be applied ###
+### Step 2: Prepare your gene expression data where GECSI needs to be applied ###
 You will need to prepare your gene expression data in the following format: (you may check `data/gene_exp_test.tsv` for the correct format):
 
 A tab-delimited file where each row is a gene and each column is a sample. The values need to be log2 transformed gene expression TPM data. The first row must be the sample names, and the first column must be **gene symbols**.
@@ -99,19 +97,19 @@ GAPDH	10.1	11.0	9.8
 ```
 Then, you will need to run these steps sequentially:
 
-#### Step 3: Compute distance between new samples and training samples ####
+### Step 3: Compute distance between new samples and training samples ###
 
 Use the following command to compute the distance between new samples and training samples. **Note**: Make sure to stick with the same working directory and project name as in Step 1 (so that the output will be generated in the same folder as where you downloaded the models). 
 
 `./GECSI.sh -c compute_dist -d --gexp-ref "/path/to/training_sample_gene_expression.tsv" --gexp-apply "/path/to/your_sample_gene_expression.tsv" --proj-name "your_proj_name" -o "your_wd"`
 
-#### Step 4: Find nearest samples between new samples and training samples ####
+### Step 4: Find nearest samples between new samples and training samples ###
 
 Use the following command to find the nearest training samples for the new samples. **Note**: Make sure that "your_sample_names.txt" contain the exact same sample names as in the gene expression data file.
 
 `./GECSI.sh -c find_nearest --ref-list "/path/to/training_sample_names.txt" --apply-list "/path/to/your_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" --nref 414 `
 
-#### Step 5: Process training sample chromatin states and apply pre-trained models to your new data ####
+### Step 5: Process training sample chromatin states and apply pre-trained models to your new data ###
 
 **Caution**: Preprocessing steps will take up to **30G** of storage. Make sure you preserve enough space for running these commands.
 
@@ -138,7 +136,7 @@ Once it's finished, you will see the predicted chromatin state annotations in `y
 
 ****
 
-### Guide for training your own model using your gene expression and chromatin state data ###
+## Guide for training your own model using your gene expression and chromatin state data ##
 #TODO
 After making sure that GECSI is correctly set up, you can use the program to train and apply your model now! Check "-h" or "--help" for help with the options. 
 
