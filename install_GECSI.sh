@@ -1,13 +1,18 @@
 #!/bin/bash
 
-# Ensure Conda is properly initialized
-source ~/mambaforge/etc/profile.d/conda.sh
-
 
 # Check for conda
 if ! command -v conda >/dev/null 2>&1; then
   echo "conda is not installed. Please install Miniconda or Anaconda first."
   exit 1
+fi
+
+source $(conda info --base)/etc/profile.d/conda.sh
+
+# Check if mamba is installed
+if ! conda list mamba | grep -q mamba; then
+  echo "Mamba is not installed. Installing mamba..."
+  conda install -y -n base -c conda-forge mamba
 fi
 
 # Set the working directory to the directory of the script
@@ -40,3 +45,11 @@ mamba activate gecsi-r
 
 # Install R packages listed in R_environment.txt
 Rscript ./scripts/env/install.R
+
+chmod +x ./GECSI.sh
+
+chmod -R +x ./scripts/*.R
+
+chmod -R +x ./preprocessing/*.sh
+
+chmod +x ./run_GECSI_example.sh
