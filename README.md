@@ -95,7 +95,6 @@ TP53	5.2	    6.1	    4.8
 BRCA1	2.3	    2.9	    3.0
 GAPDH	10.1	11.0	9.8
 ```
-Then, you will need to run these steps sequentially:
 
 ### Step 3: Compute distance between new samples and training samples ###
 
@@ -113,24 +112,24 @@ Use the following command to find the nearest training samples for the new sampl
 
 **Caution**: Preprocessing steps will take up to **30G** of storage. Make sure you preserve enough space for running these commands.
 
-You will need to first download all training sample chromatin state annotations to generate features for prediction.
+1. You will need to first download all training sample chromatin state annotations to generate features for prediction. 
 
-`wget placeholder_for_chromhmm/training_sample_chromatin_states.zip -O training_sample_chromatin_states.zip`
+    `wget placeholder_for_chromhmm/training_sample_chromatin_states.zip -O training_sample_chromatin_states.zip`
 
-Unzip the zip file. You will obtain a folder named `training_sample_chromatin_states/` that contain all training sample chromatin state bed files.
+2. Unzip the zip file. You will obtain a folder named `training_sample_chromatin_states/` that contain all training sample chromatin state bed files.
 
-`unzip training_sample_chromatin_states.zip`
+    `unzip training_sample_chromatin_states.zip`
 
-Bin the chromatin state files using the following command into 200 basepair into a separate folder called `training_sample_chromatin_states_binned/`:
+3. Bin the chromatin state files using the following command into 200 basepair into a separate folder called `training_sample_chromatin_states_binned/`:
 
-`./preprocessing/bin_bed.sh "/path/to/training_sample_chromatin_states/" 200 "/path/to/training_sample_chromatin_states_binned/" hg38`
+    `./preprocessing/bin_bed.sh "/path/to/training_sample_chromatin_states/" 200 "/path/to/training_sample_chromatin_states_binned/" hg38`
 
-Now you can apply the pre-trained GECSI models on your new samples. 
+4. Now you can apply the pre-trained GECSI models on your new samples. 
 
-**Important**: The following command performs application for each new sample and for each chromosome (specified in `--apply-sam` and `--apply-chr` command). You may want to parallelize this process if you want to generate outputs for multiple samples and chromosomes.
+    **Important**: The following command performs application for each new sample and for each chromosome (specified in `--apply-sam` and `--apply-chr` command). You may want to parallelize this process if you want to generate outputs for multiple samples and chromosomes.
 
 
-`./GECSI.sh -c apply --chrstate "/path/to/training_sample_chromatin_states_binned/" --apply-sam "sample_name" --ref-list "/path/to/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "chr" --sample-size "100000" --nref "5" --lambda "0.0001"`
+    `./GECSI.sh -c apply --chrstate "/path/to/training_sample_chromatin_states_binned/" --apply-sam "sample_name" --ref-list "/path/to/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "chr" --sample-size "100000" --nref "5" --lambda "0.0001"`
 
 Once it's finished, you will see the predicted chromatin state annotations in `your_wd/your_proj_name/Apply_0/predictions/chr/`. The results will be stored in ".rds" format in this folder and ".bed.gz" format in the subfolder `bed_files/`.
 
