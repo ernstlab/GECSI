@@ -1,6 +1,6 @@
 # Gene Expression-based Chromatin State Imputation (GECSI) #
 
-This is Gene Expression-based Chromatin State Imputation (GECSI) program. This program is used for generating chromatin state annotations from biosamples that have gene expression data. Here are the basic instructions for installing and using this program.
+**Gene Expression-based Chromatin State Imputation (GECSI)** is a tool for generating chromatin state annotations from biosamples with gene expression data. Here are the basic instructions for installing and using this program.
 
 ## Quick Guide ##
 
@@ -18,9 +18,9 @@ This will create a folder named GECSI in your current working directory. You can
 ### Step 1: Installation
 GECSI is a tool based on R version 4.1.0 with the requirement of installing multiple packages. In order to avoid potential environment conflicts, you will need to install the tool in a clean environment by running:
 
-`chmod +x install_GECSI.sh`
+`chmod +x ./install_GECSI.sh`
 
-`install_GECSI.sh`
+`./install_GECSI.sh`
 
 Since it installs the R environment and all related packages from scratch, it takes ~30min to finish.
 
@@ -34,7 +34,7 @@ After the environment is installed, whenever you want to run GECSI, please activ
 
 After the environment is set up, to correctly execute the program, you will need to first use the following commands to make certain files executable:
 
-`chmod +x GECSI.sh`
+`chmod +x ./GECSI.sh`
 
 `chmod -R +x ./scripts/*.R`
 
@@ -79,6 +79,8 @@ Similarly, you can download the training sample gene expression data using
 and the names of training samples using
 
 `wget placeholder_for_zenodo/training_sample_names.txt -O training_sample_names.txt`
+
+If the above downloading fails, you can download them manually.
 
 ### Step 2: Prepare your gene expression data where GECSI needs to be applied ###
 You will need to prepare your gene expression data in the following format: (you may check `data/gene_exp_test.tsv` for the correct format):
@@ -126,7 +128,7 @@ Use the following command to find the nearest training samples for the new sampl
 
 4. Now you can apply the pre-trained GECSI models on your new samples. 
 
-    **Important**: The following command performs application for each new sample and for each chromosome (specified in `--apply-sam` and `--apply-chr` command). You may want to parallelize this process if you want to generate outputs for multiple samples and chromosomes.
+    **Important**: The following command performs application for each new sample and for each chromosome (specified in `--apply-sam` and `--apply-chr` command). You may want to parallelize this process if you want to generate outputs for multiple samples and chromosomes using GNU Parallel or a job array.
 
 
     `./GECSI.sh -c apply --chrstate "/path/to/training_sample_chromatin_states_binned/" --apply-sam "sample_name" --ref-list "/path/to/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "chr" --sample-size "100000" --nref "5" --lambda "0.0001"`
@@ -158,5 +160,8 @@ Standard steps of performing GECSI is:
 
 `./GECSI.sh -c apply`
 
+## Questions or Issues? ##
+
+If you encounter problems or have questions, please open an issue on the GitHub repository or contact the maintainer.
 
 
