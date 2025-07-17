@@ -2,25 +2,38 @@
 
 **Gene Expression-based Chromatin State Imputation (GECSI)** is a tool for generating chromatin state annotations from biosamples with gene expression data. Here are the basic instructions for installing and using this program.
 
-## Quick Guide ##
+# Table of Contents #
+- [How do I install it?](#how-do-i-install-it)
+  - [Step 0: Clone This Repository](#step-0-clone-this-repository)
+  - [Step 1: Installation](#step-1-installation)
+  - [Step 2: Check that GECSI is correctly installed](#step-2-check-that-gecsi-is-correctly-installed)
+- [Using Pre-Trained Models](#guide-for-using-previously-trained-models-to-apply-to-your-gene-expression-data)
+  - [Step 1: Download Pre-Trained Models](#step-1-download-pre-trained-models-and-training-gene-expression-data)
+  - [Step 2: Prepare Your Gene Expression Data](#step-2-prepare-your-gene-expression-data-where-gecsi-needs-to-be-applied)
+  - [Step 3: Compute Sample Distance](#step-3-compute-distance-between-new-samples-and-training-samples)
+  - [Step 4: Find Nearest Samples](#step-4-find-nearest-samples-between-new-samples-and-training-samples)
+  - [Step 5: Apply Pre-Trained Models](#step-5-process-training-sample-chromatin-states-and-apply-pre-trained-models-to-your-new-data)
+- [Troubleshooting and Support](#questions-or-issues)
 
-### Step 0: Clone This Repository
-To download and use this project locally, run the following command in your terminal:
+# How do I install it? #
 
-`git clone https://github.com/jingyuanf/GECSI.git`
+## Step 0: Clone This Repository
+* To download and use this project locally, run the following command in your terminal:
 
-This will create a folder named GECSI in your current working directory. You can then navigate into it:
+    `git clone https://github.com/jingyuanf/GECSI.git`
 
-`cd GECSI`
+* This will create a folder named GECSI in your current working directory. You can then navigate into it:
+
+    `cd GECSI`
 
 
 
-### Step 1: Installation
+## Step 1: Installation
 GECSI is a tool based on R version 4.1.0 with the requirement of installing multiple packages. In order to avoid potential environment conflicts, you will need to install the tool in a clean environment by running:
 
-`chmod +x ./install_GECSI.sh`
+    `chmod +x ./install_GECSI.sh`
 
-`./install_GECSI.sh`
+    `./install_GECSI.sh`
 
 Since it installs the R environment and all related packages from scratch, it takes ~30min to finish.
 
@@ -28,7 +41,7 @@ This will automatically create an environment called "gecsi-r" for you.
 
 After the environment is installed, whenever you want to run GECSI, please activate the environment using:
 
-`conda activate gecsi-r`
+    `conda activate gecsi-r`
 
 ### Step 2: Check that GECSI is correctly installed ###
 
