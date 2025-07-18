@@ -236,7 +236,7 @@ Check `./GECSI.sh -h` or refer to the GECSI manual for a full list of configurab
 Once it's finished, you will see the predicted chromatin state annotations in `your_wd/your_proj_name/Apply_<task_id>/predictions/<chr>/`. The results will be stored in ".rds" format in this folder and ".bed.gz" format in the subfolder `bed_files/`.
 
 
-## Questions or Issues? ##
+# Questions or Issues? #
 
 If you encounter problems or have questions, please open an issue on the GitHub repository or contact the maintainer.
 
