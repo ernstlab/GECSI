@@ -2,18 +2,30 @@
 
 **Gene Expression-based Chromatin State Imputation (GECSI)** is a tool for generating chromatin state annotations from biosamples with gene expression data. Here are the basic instructions for installing and using this program.
 
-# Table of Contents #
-- [How do I install it?](#how-do-i-install-it)
-  - [Step 0: Clone This Repository](#step-0-clone-this-repository)
-  - [Step 1: Installation](#step-1-installation)
-  - [Step 2: Check that GECSI is correctly installed](#step-2-check-that-gecsi-is-correctly-installed)
-- [Using Pre-Trained Models](#how-do-i-use-previously-trained-models-to-apply-to-my-own-gene-expression-data)
-  - [Step 1: Download Pre-Trained Data](#step-1-download-pre-trained-data-and-training-gene-expression-data)
-  - [Step 2: Prepare Your Gene Expression Data](#step-2-prepare-your-gene-expression-data)
-  - [Step 3: Compute Sample Distance](#step-3-compute-sample-distance)
-  - [Step 4: Find Nearest Samples](#step-4-find-nearest-samples)
-  - [Step 5: Apply Pre-Trained Models](#step-5-apply-pre-trained-models)
-- [Troubleshooting and Support](#questions-or-issues)
+## Table of Contents
+
+### [Installation](#how-do-i-install-it)
+- [Step 0: Clone This Repository](#step-0-clone-this-repository)
+- [Step 1: Installation](#step-1-installation)
+- [Step 2: Check that GECSI is Correctly Installed](#step-2-check-that-gecsi-is-correctly-installed)
+
+### [Using Pre-Trained Models](#how-do-i-use-previously-trained-models-to-apply-to-my-own-gene-expression-data)
+- [Step 1: Download Pre-Trained Data](#step-1-download-pre-trained-data-and-training-gene-expression-data)
+- [Step 2: Prepare Your Gene Expression Data](#step-2-prepare-your-gene-expression-data)
+- [Step 3: Compute Sample Distance](#step-3-compute-sample-distance)
+- [Step 4: Find Nearest Samples](#step-4-find-nearest-samples)
+- [Step 5: Apply Pre-Trained Models](#step-5-apply-pre-trained-models)
+
+### [Train Your Own Model](#how-do-i-train-my-own-model)
+- [Step 1: Prepare Data](#step-1-prepare-data)
+  - [Chromatin States](#training-samples-chromatin-states-data)
+  - [Gene Expression](#training-samples-and-applying-samples-gene-expression-data)
+- [Step 2: Compute Sample Distance](#step-2-compute-sample-distance)
+- [Step 3: Find Nearest Samples](#step-3-find-nearest-samples)
+- [Step 4: Train GECSI Model](#step-4-train-gecsi-model)
+- [Step 5: Apply GECSI Model](#step-5-apply-gecsi-model)
+
+### [Troubleshooting and Support](#questions-or-issues)
 
 # How do I install it? #
 
@@ -198,7 +210,7 @@ If you are using a different model, update the following parameters accordingly:
                 --num-states 18 \ # Total number of states
                 --quies-state "18_Quies" \ # The name for quiescent state
 
-## Step 4: Apply GECSI model ##
+## Step 5: Apply GECSI model ##
 
 Check [Step 5: Apply Pre-trained Models](#step-5-apply-pre-trained-models) for more details.
 
