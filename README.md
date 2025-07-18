@@ -8,7 +8,7 @@
   - [Step 1: Installation](#step-1-installation)
   - [Step 2: Check that GECSI is correctly installed](#step-2-check-that-gecsi-is-correctly-installed)
 - [Using Pre-Trained Models](#how-do-i-use-previously-trained-models-to-apply-to-my-own-gene-expression-data)
-  - [Step 1: Download Pre-Trained Models](#step-1-download-pre-trained-models-and-training-gene-expression-data)
+  - [Step 1: Download Pre-Trained Data](#step-1-download-pre-trained-data-and-training-gene-expression-data)
   - [Step 2: Prepare Your Gene Expression Data](#step-2-prepare-your-gene-expression-data)
   - [Step 3: Compute Sample Distance](#step-3-compute-sample-distance)
   - [Step 4: Find Nearest Samples](#step-4-find-nearest-samples)
@@ -55,9 +55,9 @@ Once this is finished, it means that GECSI is correctly set up!
 
 # How do I use previously trained models to apply to my own gene expression data? #
 
-Please follow the below steps sequentially and closely.
+Follow the steps below. Detailed manual for GECSI could be found at [link to pdf file] or by checking `./GECSI.sh -h`.
 
-## Step 1: Download pre-trained models and training gene expression data ##
+## Step 1: Download pre-trained data and training gene expression data ##
 
 * You need to download all models we trained using the International Human Epigenome Consortium (IHEC) into your working directory. 
 
@@ -109,54 +109,120 @@ Use the following command to compute the distance between new samples and traini
 
 Use the following command to find the nearest training samples for the new samples. **Note**: Make sure that "your_sample_names.txt" contain the exact same sample names as in the gene expression data file.
 
-    ./GECSI.sh -c find_nearest --ref-list "your_wd/your_proj_name/training_sample_names.txt" --apply-list "/path/to/your_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" --nref 414
+    ./GECSI.sh -c find_nearest --ref-list "your_wd/your_proj_name/training_sample_names.txt" --apply-list "/path/to/your_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" --nref 5
 
 ## Step 5: Apply Pre-trained Models ##
 
-**Caution**: Preprocessing steps will take up to **30G** of storage. Make sure you preserve enough space for running these commands.
-
-1. Bin the chromatin state files using the following command into 200 basepair into a separate folder called `training_sample_chromatin_states_binned/`:
-
-    ```
-    ./preprocessing/bin_bed.sh "your_wd/your_proj_name/training_sample_chromatin_states/" 200 "your_wd/your_proj_name/training_sample_chromatin_states_binned/" hg38
-    ```
-
-2. Now you can apply the pre-trained GECSI models on your new samples. 
-
-    **Important**: The following command performs application for each new sample and for each chromosome (specified in `--apply-sam` and `--apply-chr` command). You may want to parallelize this process if you want to generate outputs for multiple samples and chromosomes using GNU Parallel or a job array.
+**Caution**: These steps will take up to **30G** of storage. Make sure you preserve enough space for running these commands.
 
 
-    ```
-    ./GECSI.sh -c apply --chrstate "your_wd/your_proj_name/training_sample_chromatin_states_binned/" --apply-sam "sample_name" --ref-list "your_wd/your_proj_name/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "chr" --sample-size "100000" --nref "5" --lambda "0.0001"
-    ```
+Bin the chromatin state files using the following command into 200 basepair into a separate folder called `training_sample_chromatin_states_binned/`:
 
-Once it's finished, you will see the predicted chromatin state annotations in `your_wd/your_proj_name/Apply_0/predictions/chr/`. The results will be stored in ".rds" format in this folder and ".bed.gz" format in the subfolder `bed_files/`.
+```
+./preprocessing/bin_bed.sh "your_wd/your_proj_name/training_sample_chromatin_states/" 200 "your_wd/your_proj_name/training_sample_chromatin_states_binned/" hg38 4
+```
+
+Now you can apply the pre-trained GECSI models on your new samples. 
+
+**Important**: The following command performs application for each new sample and for each chromosome (specified in `--apply-sam` and `--apply-chr` command). You may want to parallelize this process if you want to generate outputs for multiple samples and chromosomes using GNU Parallel or a job array.
+
+
+```
+./GECSI.sh -c apply --chrstate "your_wd/your_proj_name/training_sample_chromatin_states_binned/" --apply-sam "<apply-sam>" --ref-list "your_wd/your_proj_name/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "<chr>" --sample-size "100000" --nref "5" --lambda "0.0001"
+```
+
+Once it's finished, you will see the predicted chromatin state annotations in `your_wd/your_proj_name/Apply_0/predictions/<chr>/`. The results will be stored in ".rds" format in this folder and ".bed.gz" format in the subfolder `bed_files/`.
 
 
 
 
 # How do I train my own model? #
-#TODO
-After making sure that GECSI is correctly set up, you can use the program to train and apply your model now! Check "-h" or "--help" for help with the options. 
 
+Follow the steps below for a typical setting of the training and application procedure. Detailed manual for GECSI could be found at [link to pdf file] or by checking `./GECSI.sh -h`.
 
-`chmod +x GECSI.sh`
+## Step 1: Prepare data ##
 
-`./GECSI.sh -h`
+### Training Samples Chromatin States data ###
 
-`./GECSI.sh --help`
+Chromatin states files must be in **.bed** or **.bed.gz** format and stored in an input directory (for example `"/path/to/training_sample_chromatin_states/"`). 
 
-Alternatively, you can check a more detailed manual here [provide a link to the manual].
+To preprocess the chromatin state data, run the following command. The binned chromatin states will be saved to `"/path/to/training_sample_chromatin_states_binned/"`
 
+    ./preprocessing/bin_bed.sh "/path/to/training_sample_chromatin_states/" $BINNING_RESOLUTION "/path/to/training_sample_chromatin_states_binned/" $GENOME_ASSEMBLY #CHROMATIN_STATE_COLUMN
 
-Standard steps of performing GECSI is:
-`./GECSI.sh -c compute_dist`
+For example, to use a binning resolution of 200 bp, a genome assembly of hg38, and to extract chromatin states from the 4th column (1-based indexing):
 
-`./GECSI.sh -c find_nearest_ct`
+    ./preprocessing/bin_bed.sh "/path/to/training_sample_chromatin_states/" 200 "/path/to/training_sample_chromatin_states_binned/" hg38 4
 
-`./GECSI.sh -c train`
+**Note**: All chromatin state files should span the same genomic regions across chromosomes (i.e., consistent chromosome coverage and coordinates).
 
-`./GECSI.sh -c apply`
+Optional Check: Ensure all chromatin state BED files cover the same genomic regions:
+
+    bash preprocessing/check_bed_range_consistency.sh "/path/to/training_sample_chromatin_states/"
+
+### Training Samples and Applying Samples Gene Expression data ###
+
+Follow the same procedure as in [Step 2: Prepare Your Gene Expression Data](#step-2-prepare-your-gene-expression-data) in the previous section.
+
+## Step 2: Compute Sample Distance ##
+
+`"your_wd"` is the working directory you will place your project folder in. `"your_proj_name"` is the name of project folder where all input and output data will be stored.
+
+    ./GECSI.sh -c compute_dist -d --gexp-ref "/path/to/training_sample_gene_expression.tsv" --gexp-apply "/path/to/applying_sample_gene_expression.tsv" --proj-name "your_proj_name" -o "your_wd"
+
+## Step 3: Find Nearest Samples ##
+
+**Note**: Make sure that `"training_sample_names.txt"` and `"applying_sample_names.txt"` contain sample names exactly matching the headers in the gene expression files. `NUM_REF` specifies the number of nearest reference samples used for model assembly.
+
+    ./GECSI.sh -c find_nearest --ref-list "/path/to/training_sample_names.txt" --apply-list "/path/to/applying_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" --nref NUM_REF
+
+## Step 4: Train GECSI model ##
+
+Check `./GECSI.sh -h` or refer to the GECSI manual for a full list of configurable options.
+
+**Note**: The example below assumes you are using the **Roadmap Epigenomics 18-state model**.
+If you are using a different model, update the following parameters accordingly:
+`--states-list`, `--num-states`, and `--quies-state`.
+
+    ./GECSI.sh -c train 
+                --chr "all" \
+                --chrstate "/path/to/training_sample_chromatin_states_binned/" \
+                --train-sam "TRAINING-SAM" <training is done one sample at a time> \
+                --ref-list  "/path/to/training_sample_names.txt" \
+                --proj-name "your_proj" 
+                -o "your_wd" \
+                --task-id 0 \ # Specify any integer if you would like to separate for different tasks
+                -k 5 \ # Number of features in the model
+                --sample-size 100000 \ # Number of positions sampled for model training 
+                --states-list "./data/chr_state_list.txt" \ # A file containing chromatin state names separated by lines 
+                --num-states 18 \ # Total number of states
+                --quies-state "18_Quies" \ # The name for quiescent state
+
+## Step 4: Apply GECSI model ##
+
+Check [Step 5: Apply Pre-trained Models](#step-5-apply-pre-trained-models) for more details.
+
+Check `./GECSI.sh -h` or refer to the GECSI manual for a full list of configurable options.
+
+```
+./GECSI.sh -c apply \
+            --chrstate "/path/to/training_sample_chromatin_states_binned/" \
+            --apply-sam "<apply-sam>" \
+            --ref-list "your_wd/your_proj_name/training_sample_names.txt" \
+            --proj-name "your_proj_name" \
+            -o "your_wd" 
+            -k "5" \
+            --ref-chr "all" \
+            --apply-chr "<chr>" \ # Specify a chromosome
+            --sample-size "100000" 
+            --nref "5" \
+            --lambda "0.0001" \
+            --num-states 18 \ # Total number of states
+            --states-list "./data/chr_state_list.txt" \ # A file containing chromatin state names separated by lines 
+```
+
+Once it's finished, you will see the predicted chromatin state annotations in `your_wd/your_proj_name/Apply_<task_id>/predictions/<chr>/`. The results will be stored in ".rds" format in this folder and ".bed.gz" format in the subfolder `bed_files/`.
+
 
 ## Questions or Issues? ##
 

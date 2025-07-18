@@ -19,11 +19,20 @@ input_dir="$1"
 bin_size="$2"
 output_dir="$3"
 genome="${4:-hg38}"  # default to hg38
+chrom_col="${5:-}"           # chromatin state column number (1-based)
+
 
 
 # Validate input
-if [[ -z "$input_dir" || -z "$bin_size" || -z "$output_dir" ]]; then
-  echo "Usage: $0 <input_dir> <bin_size> <output_dir> [genome]"
+if [[ -z "$input_dir" || -z "$bin_size" || -z "$output_dir" || -z "$chrom_col" ]]; then
+  echo "Usage: $0 <input_dir> <bin_size> <output_dir> [genome] <chrom_col>"
+  echo "Example: $0 input_dir 200 output_dir hg38 7"
+  exit 1
+fi
+
+# Check if chrom_col is a positive integer
+if ! [[ "$chrom_col" =~ ^[1-9][0-9]*$ ]]; then
+  echo "Error: <chrom_col> must be a positive integer."
   exit 1
 fi
 
@@ -55,7 +64,7 @@ for bed in "$input_dir"/*.bed.gz; do
 
   # Intersect input BED with bins
   bedtools intersect -a "$bin_file" -b <(zcat "$bed") -wa -wb | \
-  awk '{print $1, $2, $3, $7}' OFS='\t' > "${output_dir}/${filename%.bed.gz}_binned.bed"
+  awk -v col="$chrom_col" '{print $1, $2, $3, $col}' OFS='\t' > "${output_dir}/${filename%.bed.gz}_binned.bed"
 
   bgzip "${output_dir}/${filename%.bed.gz}_binned.bed"
 done
