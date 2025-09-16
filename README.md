@@ -39,7 +39,6 @@ This will create a folder named GECSI in your current working directory. You can
     cd GECSI
 
 
-
 ## Step 1: Installation
 GECSI is a tool based on R version 4.1.0 with the requirement of installing multiple packages. In order to avoid potential environment conflicts, you will need to install the tool in a clean environment by running:
 
@@ -67,7 +66,9 @@ Once this is finished, it means that GECSI is correctly set up!
 
 # How do I use previously trained models to apply to my own gene expression data? #
 
-Follow the steps below. Detailed manual for GECSI could be found at [link to pdf file] or by checking `./GECSI.sh -h`.
+The models can be downloaded from `./models/Train_0/models/lr-model-multinom/all`. However, currently the International Human Epigenome Consortium (IHEC) EpiAtlas data has not been released so using previously trained models is not yet supported as it requires using unreleased data. Once the data is released at https://ihec-epigenomes.org/epiatlas/data/, we will release all files required for applying previously trained models. 
+
+Once all files are released, you can use previously trained models by following the steps below:
 
 ## Step 1: Download pre-trained data and training gene expression data ##
 
@@ -83,11 +84,11 @@ Follow the steps below. Detailed manual for GECSI could be found at [link to pdf
 
 * Now obtain the pre-trained models using
 
-        wget "placeholder_for_zenodo/Pretrained.zip" -O Pretrained.zip
+        wget "placeholder_link/Pretrained.zip" -O Pretrained.zip
     
     **or** 
 
-        curl -L "placeholder_for_zenodo/Pretrained.zip" -o Pretrained.zip
+        curl -L "placeholder_link/Pretrained.zip" -o Pretrained.zip
 
 * Unzip the zip file
 
