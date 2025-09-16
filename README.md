@@ -150,7 +150,7 @@ Once it's finished, you will see the predicted chromatin state annotations in `y
 
 # How do I train my own model? #
 
-Follow the steps below for a typical setting of the training and application procedure. Detailed manual for GECSI could be found at [link to pdf file] or by checking `./GECSI.sh -h`.
+Follow the steps below for a standard setting of the training and application procedure. Check `./GECSI.sh -h` for more configuration options. 
 
 ## Step 1: Prepare data ##
 
@@ -190,7 +190,7 @@ Follow the same procedure as in [Step 2: Prepare Your Gene Expression Data](#ste
 
 ## Step 4: Train GECSI model ##
 
-Check `./GECSI.sh -h` or refer to the GECSI manual for a full list of configurable options.
+Check `./GECSI.sh -h` for a full list of configurable options.
 
 **Note**: The example below assumes you are using the **Roadmap Epigenomics 18-state model**.
 If you are using a different model, update the following parameters accordingly:
@@ -214,7 +214,7 @@ If you are using a different model, update the following parameters accordingly:
 
 Check [Step 5: Apply Pre-trained Models](#step-5-apply-pre-trained-models) for more details.
 
-Check `./GECSI.sh -h` or refer to the GECSI manual for a full list of configurable options.
+Check `./GECSI.sh -h` for a full list of configurable options.
 
 ```
 ./GECSI.sh -c apply \
