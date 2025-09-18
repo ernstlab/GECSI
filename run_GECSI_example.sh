@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -e  # Exit on error
+# set -e  # Exit on error
+# trap 'echo -e "\n[ERROR] Line $LINENO: $BASH_COMMAND failed. See logs for details." >&2' ERR
+
 
 # Set the working directory to the directory of the script
 SCRIPT_DIR="$(dirname "$0")"
@@ -55,24 +57,49 @@ print_progress() {
 
 print_progress
 ./preprocessing.sh > ${logdir}/preprocessing.log 2>&1
+status=$?
+if [[ $status -ne 0 ]]; then
+    echo "[ERROR] Preprocessing failed (exit code $status). Check ${logdir}/preprocessing.log" >&2
+    exit $status
+fi
 
 chmod +x ./GECSI.sh
 print_progress
 ./GECSI.sh -c compute_dist -d --gexp-ref "${gene_exp_train}" --gexp-apply "${gene_exp_test}" --proj-name "${proj_name}" --seed ${seed} --dist "${dist_method}" -o "$outdir" > ${logdir}/compute_dist.log 2>&1
+status=$?
+if [[ $status -ne 0 ]]; then
+    echo "[ERROR] GECSI compute_dist failed (exit code $status). Check ${logdir}/compute_dist.log" >&2
+    exit $status
+fi
 
 print_progress
 ./GECSI.sh -c find_nearest --ref-list "${ref_list}" --apply-list "${apply_list}" --proj-name "${proj_name}" --dist "${dist_method}" -o "$outdir" --task-id "$task_id" --nref "$nref" > ${logdir}/find_nearest.log 2>&1
+status=$?
+if [[ $status -ne 0 ]]; then
+    echo "[ERROR] GECSI find_nearest failed (exit code $status). Check ${logdir}/find_nearest.log" >&2
+    exit $status
+fi
 
 for training_ct in $(cat "./data/training_ct.txt"); do
     echo "Training on cell type: $training_ct" > ${logdir}/train_${training_ct}.log
     ./GECSI.sh -c train --chr "chr1" --chrstate "${chrstate_dir}" --train-sam "${training_ct}" --ref-list "${ref_list}" --proj-name "${proj_name}" --dist "${dist_method}" -o "$outdir" --task-id "$task_id" -k "$k" --sample-size "1000" --states-list $state_list --num-states 18 --quies-state "18_Quies" --overwrite >> ${logdir}/train_${training_ct}.log 2>&1
+    status=$?
+    if [[ $status -ne 0 ]]; then
+        echo "[ERROR] GECSI train failed for ${training_ct} (exit code $status). Check ${logdir}/train_${training_ct}.log" >&2
+        exit $status
+    fi
     echo "Training completed for cell type: $training_ct" >> ${logdir}/train_${training_ct}.log
     print_progress
 done
 
 for testing_ct in $(cat "./data/testing_ct.txt"); do
     echo "Applying model to cell type: $testing_ct" > ${logdir}/apply_${testing_ct}.log
-    ./GECSI.sh -c apply --chrstate "${chrstate_dir}" --apply-sam "${testing_ct}" --ref-list "${ref_list}" --proj-name "${proj_name}" --dist "${dist_method}" -o "$outdir" --task-id "$task_id" -k "$k" --ref-chr $train_chr --apply-chr $apply_chr --sample-size "1000" --nref "$nref" --lambda "0.0001" --num-states 18 --states-list $state_list --overwrite >> ${logdir}/apply_${testing_ct}.log 2>&1
+    ./GECSI.sh -c apply --chrstate "${chrstate_dir}" --apply-sam "${testing_ct}" --ref-list "${ref_list}" --proj-name "${proj_name}" --dist "${dist_method}" -o "$outdir" --task-id "$task_id" -k "$k" --ref-chr $train_chr --apply-chr $apply_chr --sample-size "1000" --nref "$nref" --lambda "0.0001" --num-states 18 --states-list $state_list --overwrite --probability >> ${logdir}/apply_${testing_ct}.log 2>&1
+    status=$?
+    if [[ $status -ne 0 ]]; then
+        echo "[ERROR] GECSI apply failed for ${testing_ct} (exit code $status). Check ${logdir}/apply_${testing_ct}.log" >&2
+        exit $status
+    fi
     echo "Application completed for cell type: $testing_ct" >> ${logdir}/apply_${testing_ct}.log
     print_progress
 done

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Function to print usage
 help() {
@@ -50,10 +51,9 @@ help() {
     echo "  --sample-size <integer>   Sample size (number of positions) that was used for training. (default:500000)"
     echo "  --ignore-missing-model    When encountering models that are missing, ignore and use the other models instead of reporting error"
     echo "  --lambda <double>          Lasso regularization parameter (lambda)"
+    echo "  --probability          Generate probability estimates"
     echo "  -k | --k-nearest <integer> Number of nearest reference celltypes used as features (default: 10)"
     echo "  -v, -d, --overwrite, --parallel, --ref-list, --proj-name, -o, --task-id, --seed as described in 'General Commands'"
-
-    exit 0
 }
 
 usage() {
@@ -69,8 +69,8 @@ chr="all"
 ref_list="default"
 proj_name="new_proj"
 seed=42
-task_id="0"
-dist="scc"
+task_id="1"
+dist="pcc"
 nref=100
 gexp_ref=""
 gexp_apply=""
@@ -91,6 +91,7 @@ lambda=0.001
 nstates=18
 quies_state="18_Quies"
 states_list=""
+probability=false
 
 
 
@@ -244,12 +245,18 @@ while [[ $# -gt 0 ]]; do
         overwrite=true
         shift
         ;;
+        --probability)
+        probability=true
+        shift
+        ;;
         -h|--help)
         help
+        exit 0
         ;;
         *)
         echo "Unknown option: $key"
         help
+        exit 1
         ;;
     esac
 done
@@ -480,6 +487,7 @@ apply() {
         echo "lambda: $lambda"
         echo "num_states: $nstates"
         echo "states_list: $states_list"
+        echo "probability: $probability"
     fi
 
     if [ -z "$ref_list" ]; then
@@ -518,6 +526,7 @@ apply() {
                             --parallel ${parallel} \
                             --overwrite ${overwrite} \
                             --num_states ${nstates} \
+                            --probability ${probability} \
 
     else
         /usr/bin/time -v ${apply_name} -v ${verbose}\
@@ -541,6 +550,7 @@ apply() {
                             --overwrite ${overwrite} \
                             --num_states ${nstates} \
                             --states_list ${states_list} \
+                            --probability ${probability} \
     
     fi
 

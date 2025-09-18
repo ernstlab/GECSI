@@ -62,11 +62,12 @@ for bed in "$input_dir"/*.bed.gz; do
   filename=$(basename "$bed")
   echo "Processing $filename ..."
 
+
   # Intersect input BED with bins
   bedtools intersect -a "$bin_file" -b <(zcat "$bed") -wa -wb | \
-  awk -v col="$chrom_col" '{print $1, $2, $3, $col}' OFS='\t' > "${output_dir}/${filename%.bed.gz}_binned.bed"
+  awk -v col="$chrom_col" '{print $1, $2, $3, $(col+3)}' OFS='\t' > "${output_dir}/${filename%.bed.gz}_binned.bed"
 
-  bgzip "${output_dir}/${filename%.bed.gz}_binned.bed"
+  bgzip -f "${output_dir}/${filename%.bed.gz}_binned.bed"
 done
 
 echo "Binning completed."

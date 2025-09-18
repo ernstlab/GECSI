@@ -238,8 +238,9 @@ for (ct in training_ct){
       all_chip_files <- list.files(opt$chip, full.names = TRUE)
       read_chip = grep(ct, all_chip_files, value = TRUE)
       if(length(read_chip) == 0){
-        message(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
-        read_chip
+        stop(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
+      } else if(length(read_chip) > 1){
+        stop(paste0("Multiple ChIP-seq files found for cell type ", ct, ": ", paste(read_chip, collapse=", ")))
       }
       if(endsWith(read_chip, ".rds")){
         chip_ct = readRDS(read_chip)
@@ -304,7 +305,15 @@ for (ct in training_ct){
   predictors <- colnames(train_1hot_df)
 
   train_1hot_df[,target] <- Y_train_df[,target]
-  train_1hot_df[,target] <- relevel(as.factor(train_1hot_df[,target]), ref=quies_state)
+  target_factor <- as.factor(train_1hot_df[,target])
+  if (quies_state %in% levels(target_factor)) {
+    train_1hot_df[,target] <- relevel(target_factor, ref = quies_state)
+  } else {
+    # Find the most frequent state
+    most_freq <- names(sort(table(target_factor), decreasing = TRUE))[1]
+    message(paste0("quies_state '", quies_state, "' not found. Using most frequent state '", most_freq, "' as reference."))
+    train_1hot_df[,target] <- relevel(target_factor, ref = most_freq)
+  }
 
   formula_multinom <- as.formula(paste0(target, " ~ ", paste(predictors, collapse="+")))
 

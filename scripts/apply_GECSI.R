@@ -55,9 +55,9 @@ option_list <- list(
   make_option(c("--dist"), default="pcc", help = "Distance method", metavar="distance method"),
   make_option(c("-k", "--num_nearest_celltypes"), type="integer", default=5, help="Number of k nearest training cell types to look for [default %default]", metavar="num nearest celltypes"),
   make_option(c("--training_samples"), default="./training_samples", help="Path to training samples", metavar="path to training samples"),
-  make_option(c("--lambda"), default=0.001, help="Lambda for Lasso regularization", metavar="path to training samples")
+  make_option(c("--lambda"), default=0.001, help="Lambda for Lasso regularization", metavar="lasso regularization parameter"),
+  make_option(c("--probability"), type="logical", default=FALSE, help="Generate probability estimation files", metavar="generate probability estimation")
 )
-# opt$proj_name <- "090822_test"
 
 opt <- parse_args(OptionParser(option_list=option_list))
 if(opt$verbose){
@@ -80,6 +80,7 @@ dist_method <- opt$dist
 lambda <- opt$lambda
 nstates <- opt$num_states
 states_list_f <- opt$states_list
+generate_probability <- opt$probability
 
 if (holdout_f != "None"){
   if(!endsWith(holdout_f, ".txt")){
@@ -360,6 +361,59 @@ rm(test_1hot_df)
 rm(X_test_df)
 gc()
 states_prob_df <- readRDS(states_prob_dir)
+
+if(opt$probability){
+  prob_dir <- file.path(pred_dir, "probability_estimate_files")
+  dir.create(prob_dir, recursive = TRUE)
+  if(test_chr == "all"){
+    for(chr in paste0("chr", c(seq(1,22), "X"))){
+      print(chr)
+      output_file = file.path(prob_dir, sprintf("%s_%s_%s_probability_estimate.txt.gz", holdout, length(all_states), chr))
+      states_prob_df = states_prob_df / length(training_ct)
+
+      # Write to output file
+      conn <- gzfile(output_file, "w")
+
+      # Write first line: region ID and chromosome
+      writeLines(paste(holdout, chr, sep = "\t"), conn)
+
+      # Write second line: header (E1, E2, ..., E18)
+      writeLines(paste(colnames(states_prob_df), collapse = "\t"), conn)
+
+      # Write posterior probabilities
+      apply(states_prob_df, 1, function(row) {
+          writeLines(paste(row, collapse = "\t"), conn)
+      })
+
+      # Close connection
+      close(conn)
+    }
+  }
+  else {
+    output_file = file.path(prob_dir, sprintf("%s_%s_%s_probability_estimate.txt.gz", holdout, length(all_states), test_chr))
+    states_prob_df = states_prob_df / length(training_ct)
+
+    # Write to output file
+    conn <- gzfile(output_file, "w")
+
+    # Write first line: region ID and chromosome
+    writeLines(paste(holdout, test_chr, sep = "\t"), conn)
+
+    # Write second line: header (E1, E2, ..., E18)
+    writeLines(paste(colnames(states_prob_df), collapse = "\t"), conn)
+
+    # Write posterior probabilities
+    apply(states_prob_df, 1, function(row) {
+        writeLines(paste(row, collapse = "\t"), conn)
+    })
+
+    # Close connection
+    close(conn)
+  }
+  if (opt$verbose){
+  print("Probability estimation files generated!")
+  }
+}
 
 pred_states_dir <- file.path(pred_dir, sprintf("pred_states_train%s_k%s_s%s_%s_lambda%s.rds", num_train_ct, k, sample_size, holdout, lambda))
 if((!file.exists(pred_states_dir)) | opt$overwrite){
