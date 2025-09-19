@@ -156,12 +156,15 @@ k_training_ct <- dist_ct_rm
 
 ### READ IN CHROMATIN STATE FILES FOR TRAINING CELL TYPES
 ## Generate GR first
-ct = k_training_ct[1]
+## Generate a ChIP-seq chunk from a list of samples first
 all_chip_files <- list.files(opt$chip, full.names = TRUE)
-read_chip = grep(ct, all_chip_files, value = TRUE)
+ct = training_ct[1]
+pattern <- paste0(ct, "([_\\-\\. ]|$)")
+read_chip = grep(pattern, all_chip_files, value = TRUE)
 if(length(read_chip) == 0){
-  message(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
-  read_chip
+  stop(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
+} else if(length(read_chip) > 1){
+  stop(paste0("Multiple ChIP-seq files found for cell type ", ct, ": ", paste(read_chip, collapse=", ")))
 }
 if(endsWith(read_chip, ".rds")){
   chip_ct = readRDS(read_chip)
@@ -172,6 +175,7 @@ if(endsWith(read_chip, ".rds")){
   message("ChIP-seq file not in a compatible format!")
   chip_ct
 }
+
 if (test_chr != "all"){
   chip_ct = chip_ct[seqnames(chip_ct) == test_chr,]
 }
@@ -205,12 +209,13 @@ if (!file.exists(file.path(chip_test_path, chip_test_save)) | opt$overwrite){
     registerDoParallel(cl)
 
     generate_chunk <- function(ct){
-        # chip_ct = readRDS(paste0(opt$chip,sprintf('%s_18_ChromHMM_binned.rds', ct)))
         all_chip_files <- list.files(opt$chip, full.names = TRUE)
-        read_chip = grep(ct, all_chip_files, value = TRUE)
+        pattern <- paste0(ct, "([_\\-\\. ]|$)")
+        read_chip = grep(pattern, all_chip_files, value = TRUE)
         if(length(read_chip) == 0){
-          message(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
-          read_chip
+          stop(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
+        } else if(length(read_chip) > 1){
+          stop(paste0("Multiple ChIP-seq files found for cell type ", ct, ": ", paste(read_chip, collapse=", ")))
         }
         if(endsWith(read_chip, ".rds")){
           chip_ct = readRDS(read_chip)
@@ -465,7 +470,7 @@ if((!file.exists(pred_bed_dir)) | opt$overwrite){
   bed_df$strand = "."
   bed_df$thickStart = bed_df$chromStart
   bed_df$thickEnd = bed_df$chromEnd
-  color_scheme = read.table("../data/color_scheme.txt", sep= "\t", header=TRUE)
+  color_scheme = read.table("./data/color_scheme.txt", sep= "\t", header=TRUE)
   color_scheme$name = paste0(color_scheme$`STATE.NO.`, "_", color_scheme$`MNEMONIC`)
   color_scheme$itemRgb = color_scheme$COLOR.CODE
   color_scheme <- color_scheme[,c("name","itemRgb")]

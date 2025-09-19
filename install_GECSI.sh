@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 
 # Check for conda
 if ! command -v conda >/dev/null 2>&1; then
@@ -21,9 +21,6 @@ SCRIPT_DIR="$(dirname "$0")"
 # Change to that directory
 cd "$SCRIPT_DIR" || exit
 
-conda install mamba -n base -c conda-forge
-
-
 ENV_NAME="gecsi-r"
 ENV_FILE="./scripts/env/environment.yml"
 
@@ -33,15 +30,28 @@ if conda env list | grep -qE "^${ENV_NAME}[[:space:]]"; then
     mamba env update -n "$ENV_NAME" -f "$ENV_FILE" --prune
 else
     echo "Creating new environment '$ENV_NAME'..."
-    mamba env create -n "$ENV_NAME" -f "$ENV_FILE"
+    mamba env create -n "$ENV_NAME" -f "$ENV_FILE" -y
 fi
 
-# echo "Done. You can now run: conda activate $ENV_NAME"
-mamba init
 
-source ~/.bashrc
+# >>> conda initialize >>>
+if command -v conda >/dev/null 2>&1; then
+    __conda_setup="$(conda 'shell.bash' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
+    else
+        if [ -f "$(dirname \"$(command -v conda)\")/../etc/profile.d/conda.sh" ]; then
+            . "$(dirname \"$(command -v conda)\")/../etc/profile.d/conda.sh"
+        fi
+    fi
+    unset __conda_setup
+else
+    log_error "Conda not found in PATH. Please install or load Conda."
+    exit 1
+fi
+# <<< conda initialize <<<
 
-mamba activate gecsi-r
+conda activate gecsi-r
 
 # Install R packages listed in R_environment.txt
 Rscript ./scripts/env/install.R

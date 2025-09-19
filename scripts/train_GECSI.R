@@ -149,12 +149,14 @@ sample_size = as.numeric(opt$sample_size)
 ### READ IN CHIP SEQ DATA FROM FOLDER
 
 ## Generate a ChIP-seq chunk from a list of samples first
-ct = training_ct[1]
 all_chip_files <- list.files(opt$chip, full.names = TRUE)
-read_chip = grep(ct, all_chip_files, value = TRUE)
+ct = training_ct[1]
+pattern <- paste0(ct, "([_\\-\\. ]|$)")
+read_chip = grep(pattern, all_chip_files, value = TRUE)
 if(length(read_chip) == 0){
-  message(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
-  read_chip
+  stop(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
+} else if(length(read_chip) > 1){
+  stop(paste0("Multiple ChIP-seq files found for cell type ", ct, ": ", paste(read_chip, collapse=", ")))
 }
 if(endsWith(read_chip, ".rds")){
   chip_ct = readRDS(read_chip)
@@ -236,7 +238,8 @@ for (ct in training_ct){
 
     generate_chunk <- function(ct){
       all_chip_files <- list.files(opt$chip, full.names = TRUE)
-      read_chip = grep(ct, all_chip_files, value = TRUE)
+      pattern <- paste0(ct, "([_\\-\\. ]|$)")
+      read_chip = grep(pattern, all_chip_files, value = TRUE)
       if(length(read_chip) == 0){
         stop(paste0("Correponding ChIP-seq file not found for cell type ", ct, "!"))
       } else if(length(read_chip) > 1){

@@ -46,7 +46,7 @@ GECSI is a tool based on R version 4.1.0 with the requirement of installing mult
 
     ./install_GECSI.sh
 
-Since it installs the R environment and all related packages from scratch, it takes ~30min to finish.
+Note: Currently this tool is supported on linux environment. The environment set up requires mamba, so if your environment doesn't have mamba, this code will automatically install it for you. If mamba install fails, you may need to manually install mamba and rerun this command. This code takes ~30min to finish.
 
 This will automatically create an environment called "gecsi-r" for you. 
 
