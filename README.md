@@ -32,7 +32,7 @@
 ## Step 0: Clone This Repository
 To download and use this project locally, run the following command in your terminal:
 
-    git clone https://github.com/jingyuanf/GECSI.git
+    git clone https://github.com/ernstlab/GECSI.git
 
 This will create a folder named GECSI in your current working directory. You can then navigate into it:
 
