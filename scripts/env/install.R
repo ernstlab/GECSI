@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+set -e
 
 rm(list = ls(all = TRUE))
 options(warn = -1)
