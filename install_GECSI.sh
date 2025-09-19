@@ -30,7 +30,7 @@ if conda env list | grep -qE "^${ENV_NAME}[[:space:]]"; then
     mamba env update -n "$ENV_NAME" -f "$ENV_FILE" --prune
 else
     echo "Creating new environment '$ENV_NAME'..."
-    mamba env create -n "$ENV_NAME" -f "$ENV_FILE" -y
+    mamba env create -n "$ENV_NAME" -f "$ENV_FILE"
 fi
 
 
