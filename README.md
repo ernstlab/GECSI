@@ -66,11 +66,11 @@ Once this is finished, it means that GECSI is correctly set up!
 
 # How do I use previously trained models to apply to my own gene expression data? #
 
-The models can be downloaded from `./models/Train_0/models/lr-model-multinom/all`. However, currently the International Human Epigenome Consortium (IHEC) EpiAtlas data has not been released so using previously trained models is not yet supported as it requires using unreleased data. Once the data is released at https://ihec-epigenomes.org/epiatlas/data/, we will release all files required for applying previously trained models. 
+The models can be obtained from `./models/Train_0/models/lr-model-multinom/all`. However, currently the International Human Epigenome Consortium (IHEC) EpiAtlas data has not been released so using previously trained models is not yet supported as it requires using unreleased data. Once the data is released at https://ihec-epigenomes.org/epiatlas/data/, we will release all files required for applying previously trained models. 
 
 Once all files are released, you can use previously trained models by following the steps below:
 
-## Step 1: Download pre-trained data and training gene expression data ##
+## Step 1: Download IHEC chromatin state tracks and training gene expression data ##
 
 * You need to download all models we trained using the International Human Epigenome Consortium (IHEC) into your working directory. 
 
@@ -84,15 +84,15 @@ Once all files are released, you can use previously trained models by following 
 
 * Now obtain the pre-trained models using
 
-        wget "placeholder_link/Pretrained.zip" -O Pretrained.zip
+        wget "placeholder_link/GECSI_training_data.zip" -O GECSI_training_data.zip
     
     **or** 
 
-        curl -L "placeholder_link/Pretrained.zip" -o Pretrained.zip
+        curl -L "placeholder_link/GECSI_training_data.zip" -o GECSI_training_data.zip
 
 * Unzip the zip file
 
-        unzip Pretrained.zip
+        unzip GECSI_training_data.zip
 
 If the above downloading fails, you can download them manually.
 
@@ -116,13 +116,13 @@ GAPDH	10.1	11.0	9.8
 
 Use the following command to compute the distance between new samples and training samples. **Note**: Make sure to stick with the same working directory and project name as in Step 1 (so that the output will be generated in the same folder as where you downloaded the models). 
 
-    ./GECSI.sh -c compute_dist -d --gexp-ref "your_wd/your_proj_name/training_sample_gene_expression.tsv" --gexp-apply "/path/to/your_sample_gene_expression.tsv" --proj-name "your_proj_name" -o "your_wd"
+    ./GECSI.sh -c compute_dist -d --gexp-ref "your_wd/your_proj_name/GECSI_training_data/training_sample_gene_expression.tsv" --gexp-apply "/path/to/your_sample_gene_expression.tsv" --proj-name "your_proj_name" -o "your_wd"
 
 ## Step 4: Find Nearest Samples ##
 
 Use the following command to find the nearest training samples for the new samples. **Note**: Make sure that "your_sample_names.txt" contain the exact same sample names as in the gene expression data file.
 
-    ./GECSI.sh -c find_nearest --ref-list "your_wd/your_proj_name/training_sample_names.txt" --apply-list "/path/to/your_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" --nref 5
+    ./GECSI.sh -c find_nearest --ref-list "your_wd/your_proj_name/GECSI_training_data/training_sample_names.txt" --apply-list "/path/to/your_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" --nref 5
 
 ## Step 5: Apply Pre-trained Models ##
 
@@ -132,7 +132,7 @@ Use the following command to find the nearest training samples for the new sampl
 Bin the chromatin state files using the following command into 200 basepair into a separate folder called `training_sample_chromatin_states_binned/`:
 
 ```
-./preprocessing/bin_bed.sh "your_wd/your_proj_name/training_sample_chromatin_states/" 200 "your_wd/your_proj_name/training_sample_chromatin_states_binned/" hg38 4
+./preprocessing/bin_bed.sh "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states/" 200 "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states_binned/" hg38 4
 ```
 
 Now you can apply the pre-trained GECSI models on your new samples. 
@@ -141,7 +141,7 @@ Now you can apply the pre-trained GECSI models on your new samples.
 
 
 ```
-./GECSI.sh -c apply --chrstate "your_wd/your_proj_name/training_sample_chromatin_states_binned/" --apply-sam "<apply-sam>" --ref-list "your_wd/your_proj_name/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "<chr>" --sample-size "100000" --nref "5" --lambda "0.0001"
+./GECSI.sh -c apply --chrstate "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states_binned/" --apply-sam "<apply-sam>" --ref-list "your_wd/your_proj_name/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "<chr>" --sample-size "100000" --nref "5" --lambda "0.0001"
 ```
 
 Once it's finished, you will see the predicted chromatin state annotations in `your_wd/your_proj_name/Apply_0/predictions/<chr>/`. The results will be stored in ".rds" format in this folder and ".bed.gz" format in the subfolder `bed_files/`.

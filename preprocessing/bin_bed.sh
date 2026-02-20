@@ -41,15 +41,15 @@ mkdir -p "$output_dir"
 
 # Set genome file (chromosome sizes)
 if [[ "$genome" == "hg38" ]]; then
-  genome_file="../data/hg38.chrom.sizes"
+  genome_file="../data/hg38.chrom.sizes" # Edit this line to specify the correct path to chrom sizes
 elif [[ "$genome" == "hg19" ]]; then
-  genome_file="../data/hg19.chrom.sizes"
+  genome_file="../data/hg19.chrom.sizes" # Edit this line to specify the correct path to chrom sizes
 else
   echo "Unsupported genome: $genome"
   exit 1
 fi
 
-# Filter genome file to chr1–chr22, X (edit if you want Y/M included)
+# Filter genome file to chr1–chr22, and chrX (edit if you want Y/M included)
 filtered_genome="${output_dir}/filtered.chrom.sizes"
 awk '$1 ~ /^chr([1-9]|1[0-9]|2[0-2]|X)$/' "$genome_file" > "$filtered_genome"
 
