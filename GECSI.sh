@@ -52,6 +52,7 @@ help() {
     echo "  --ignore-missing-model    When encountering models that are missing, ignore and use the other models instead of reporting error"
     echo "  --lambda <double>          Lasso regularization parameter (lambda)"
     echo "  --probability          Generate probability estimates"
+    echo "  --model-dir <dir>         Trained model directories"
     echo "  -k | --k-nearest <integer> Number of nearest reference celltypes used as features (default: 10)"
     echo "  -v, -d, --overwrite, --parallel, --ref-list, --proj-name, -o, --task-id, --seed as described in 'General Commands'"
 }
@@ -92,6 +93,7 @@ nstates=18
 quies_state="18_Quies"
 states_list=""
 probability=false
+model_dir=""
 
 
 
@@ -249,6 +251,11 @@ while [[ $# -gt 0 ]]; do
         probability=true
         shift
         ;;
+        --model-dir)
+        model_dir="$2"
+        shift
+        shift
+        ;;
         -h|--help)
         help
         exit 0
@@ -298,6 +305,11 @@ if [ "$verbose" = true ]; then
     echo "apply_sam: $apply_sam"
     echo "ref_chr: $ref_chr"
     echo "parallel: $parallel"
+    echo "apply_chr: $apply_chr"
+    echo "num_states: $nstates"
+    echo "quies_state: $quies_state"
+    echo "states_list: $states_list"
+    echo "model_dir: $model_dir"
 fi
 
 # Enable debug mode if the flag is set
@@ -488,6 +500,7 @@ apply() {
         echo "num_states: $nstates"
         echo "states_list: $states_list"
         echo "probability: $probability"
+        echo "model_dir: $model_dir"
     fi
 
     if [ -z "$ref_list" ]; then
@@ -501,6 +514,11 @@ apply() {
     if [ -z "$chrstate" ]; then
         echo "Error: The chromatin state directory command requires a string of file path (--chrstate)."
         usage
+    fi
+    if [ -z "$model_dir"]; then
+        model_dir_arg=""
+    else
+        model_dir_arg="--model_dir ${model_dir}"
     fi
 
     apply_name="./scripts/apply_GECSI.R"
@@ -527,6 +545,7 @@ apply() {
                             --overwrite ${overwrite} \
                             --num_states ${nstates} \
                             --probability ${probability} \
+                            ${model_dir_arg} \
 
     else
         /usr/bin/time -v ${apply_name} -v ${verbose}\
@@ -551,6 +570,7 @@ apply() {
                             --num_states ${nstates} \
                             --states_list ${states_list} \
                             --probability ${probability} \
+                            ${model_dir_arg} \
     
     fi
 

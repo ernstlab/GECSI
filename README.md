@@ -135,13 +135,26 @@ Bin the chromatin state files using the following command into 200 basepair into
 ./preprocessing/bin_bed.sh "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states/" 200 "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states_binned/" hg38 4
 ```
 
-Now you can apply the pre-trained GECSI models on your new samples. 
+The above step might take >10 hours to finish. Alternatively, you may run the parallel version of the above step to reduce the processing time (**Recommended!**)
+
+```
+./preprocessing/bin_bed_parallel.sh "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states/" 200 "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states_binned/" hg38 4 $NUM_PARALLEL
+```
+
+For example, if you would like to run 8 jobs parallelly, you may run:
+
+```
+./preprocessing/bin_bed_parallel.sh "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states/" 200 "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states_binned/" hg38 4 8
+```
+
+After this step is finished, you can apply the pre-trained GECSI models on your new samples. 
+
 
 **Important**: The following command performs application for each new sample and for each chromosome (specified in `--apply-sam` and `--apply-chr` command). You may want to parallelize this process if you want to generate outputs for multiple samples and chromosomes using GNU Parallel or a job array.
 
 
 ```
-./GECSI.sh -c apply --chrstate "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states_binned/" --apply-sam "<apply-sam>" --ref-list "your_wd/your_proj_name/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "<chr>" --sample-size "100000" --nref "5" --lambda "0.0001"
+./GECSI.sh -c apply --chrstate "your_wd/your_proj_name/GECSI_training_data/training_sample_chromatin_states_binned/" --apply-sam "<apply-sam>" --ref-list "your_wd/your_proj_name/training_sample_names.txt" --proj-name "your_proj_name" -o "your_wd" -k "5" --ref-chr "all" --apply-chr "<chr>" --sample-size "100000" --nref "5" --lambda "0.0001" --model-dir "<path_to_GECSI>/models/Train_0/models/lr-model-multinom/all/"
 ```
 
 Once it's finished, you will see the predicted chromatin state annotations in `your_wd/your_proj_name/Apply_0/predictions/<chr>/`. The results will be stored in ".rds" format in this folder and ".bed.gz" format in the subfolder `bed_files/`.

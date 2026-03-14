@@ -56,7 +56,8 @@ option_list <- list(
   make_option(c("-k", "--num_nearest_celltypes"), type="integer", default=5, help="Number of k nearest training cell types to look for [default %default]", metavar="num nearest celltypes"),
   make_option(c("--training_samples"), default="./training_samples", help="Path to training samples", metavar="path to training samples"),
   make_option(c("--lambda"), default=0.001, help="Lambda for Lasso regularization", metavar="lasso regularization parameter"),
-  make_option(c("--probability"), type="logical", default=FALSE, help="Generate probability estimation files", metavar="generate probability estimation")
+  make_option(c("--probability"), type="logical", default=FALSE, help="Generate probability estimation files", metavar="generate probability estimation"),
+  make_option(c("--model_dir"), default="", help="Path to directory where trained models are stored. If not provided, will default to <output_dir>/<proj_name_train>/models/lr-model-multinom/<train_chr>, which is the default model storage directory for training a model.", metavar="model directory")
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -320,7 +321,11 @@ states_prob_dir = file.path(pred_dir, sprintf("states_prob_df_combined_train%s_k
 
 if((!file.exists(states_prob_dir)) | opt$overwrite){
     get_state_probability <- function(train_ct) {
-      model_save = file.path(output_dir, proj_name_train, "models", "lr-model-multinom", train_chr, sprintf("lr_model_k%s_global_val_%s_s%s.rds", k, train_ct, sample_size))
+      if(opt$model_dir != ""){
+        model_save = file.path(opt$model_dir, sprintf("lr_model_k%s_global_val_%s_s%s.rds", k, train_ct, sample_size))
+      } else {
+        model_save = file.path(output_dir, proj_name_train, "models", "lr-model-multinom", train_chr, sprintf("lr_model_k%s_global_val_%s_s%s.rds", k, train_ct, sample_size))
+      }
       model <- try(readRDS(model_save))
       if(class(model) == "try-error"){
         message(sprintf("Model file for training celltype %s for PC %s not found!! ", train_ct, pc))
