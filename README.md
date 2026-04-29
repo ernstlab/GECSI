@@ -25,6 +25,11 @@
 - [Step 4: Train GECSI Model](#step-4-train-gecsi-model)
 - [Step 5: Apply GECSI Model](#step-5-apply-gecsi-model)
 
+### [Known Limitations](#known-limitations)
+- [Computational Requirements](#computational-requirements)
+- [Input Data Quality](#input-data-quality)
+- [Potential performance limitations](#potential-performance-limitations)
+
 ### [Troubleshooting and Support](#questions-or-issues)
 
 # How do I install it? #
@@ -248,6 +253,27 @@ Check `./GECSI.sh -h` for a full list of configurable options.
 ```
 
 Once it's finished, you will see the predicted chromatin state annotations in `your_wd/your_proj_name/Apply_<task_id>/predictions/<chr>/`. The results will be stored in ".rds" format in this folder and ".bed.gz" format in the subfolder `bed_files/`.
+
+# Known Limitations #
+## Computational requirements ##
+GECSI is designed to be scalable, and it is highly recommended to run the training and applications steps in parallel for different samples by simultaneously requesting computational resources. For application step, we recommend parallelizing the process of making predictions on different chromosomes. The runtime and memory usage depend on the parameter setting. 
+
+For the training step, the runtime and memory is determined by the number of features in the model, and the number of genomic positions used to train the model. For the setting that we used in the experiment (5-15 features, 100000 positions), one GECSI model can be run on a standard workstation with in total ≥32 GB RAM, for an average time frame of 2 hours (when parallelized on 3 cores). Increasing the number of features and positions may require a high-memory compute node and longer runtime.
+
+For the application step, the runtime and memory is mainly determined by the size of the chromosome, the number of features in the model, and the number of models to ensemble. In our experimental setting (3-10 models to ensemble), the application step usually range from a few minutes (chromosome 22, ensembling 3 models) to ~ 1 hour (chromosome 1 and ensembling 10 models). 
+
+## Parallelization ##
+GECSI supports multi-threaded execution for key preprocessing steps. In practice, we have used 8GB RAM 4 cores and a parallelization of 3 threads for efficient computation.
+
+## Input data quality ##
+Model performance depends on the quality and consistency of input gene expression and chromatin state annotations. We recommend:
+
+- Proper normalization of gene expression data across samples. You should use log2 transformed TPM counts (with a pseudocount of 1) to reduce batch effects. Also try to avoid other strong batch effects without correction, as these may influence learned relationships between samples.
+- If you would like to train your own model, you should ensure consistent preprocessing of chromatin state annotations across epigenomes
+
+## Potential performance limitations ##
+- If you are applying the pretrained model, note that it may have reduced performance on cell or tissue types that have been completely unseen by the model. 
+- Performance may be reduced for chromatin states that are highly cell-type-restricted.
 
 
 # Questions or Issues? #
