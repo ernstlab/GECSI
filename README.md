@@ -263,17 +263,16 @@ For the training step, the runtime and memory is determined by the number of fea
 For the application step, the runtime and memory is mainly determined by the size of the chromosome, the number of features in the model, and the number of models to ensemble. In our experimental setting (3-10 models to ensemble), the application step usually range from a few minutes (chromosome 22, ensembling 3 models) to ~ 1 hour (chromosome 1 and ensembling 10 models). 
 
 ## Parallelization ##
-GECSI supports multi-threaded execution for key preprocessing steps. In practice, we have used 8GB RAM 4 cores and a parallelization of 3 threads for efficient computation.
+GECSI supports multi-threaded execution for the training and application steps, specifically for more efficient data processing. In practice, we have used 8GB RAM 4 cores and a parallelization of 3 threads. 
 
 ## Input data quality ##
 Model performance depends on the quality and consistency of input gene expression and chromatin state annotations. We recommend:
 
-- Proper normalization of gene expression data across samples. You should use log2 transformed TPM counts (with a pseudocount of 1) to reduce batch effects. Also try to avoid other strong batch effects without correction, as these may influence learned relationships between samples.
+- Proper normalization of gene expression data across samples. You should use log2 transformed TPM counts (with a pseudocount of 1) to keep consistent with what have been used in the pretrained GECSI model.
 - If you would like to train your own model, you should ensure consistent preprocessing of chromatin state annotations across epigenomes
 
 ## Potential performance limitations ##
-- If you are applying the pretrained model, note that it may have reduced performance on cell or tissue types that have been completely unseen by the model. 
-- Performance may be reduced for chromatin states that are highly cell-type-restricted.
+Performance may be reduced for chromatin states that are highly cell-type-restricted.
 
 
 # Questions or Issues? #
