@@ -89,11 +89,11 @@ Once all files are released, you can use previously trained models by following 
 
 * Now obtain the pre-trained models using
 
-        wget "placeholder_link/GECSI_training_data.zip" -O GECSI_training_data.zip
+        wget "https://zenodo.org/records/21112126/files/GECSI_training_data.zip" -O GECSI_training_data.zip
     
     **or** 
 
-        curl -L "placeholder_link/GECSI_training_data.zip" -o GECSI_training_data.zip
+        curl -L "https://zenodo.org/records/21112126/files/GECSI_training_data.zip" -o GECSI_training_data.zip
 
 * Unzip the zip file
 
