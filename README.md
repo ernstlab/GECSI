@@ -1,6 +1,11 @@
 # Gene Expression-based Chromatin State Imputation (GECSI) #
+ 
+**Gene Expression-based Chromatin State Imputation (GECSI)** is a tool for generating chromatin state annotations from biosamples with gene expression data. Here are the basic instructions for installing and using this program. The method is described in 
 
-**Gene Expression-based Chromatin State Imputation (GECSI)** is a tool for generating chromatin state annotations from biosamples with gene expression data. Here are the basic instructions for installing and using this program.
+Here are links to the [GECSI predictions for the predCS IHEC epigenomes](https://ihec-epigenomes.org/epiatlas/index/post_processed_data/per_epigenome_ChromHMM_GECSI/) and the [GECSI predictions for the fullObs IHEC epigenomes](https://ihec-epigenomes.org/epiatlas/index/post_processed_data/ChromHMM_Supplementary_fullobs_GECSI_pred/) described in the manuscript:
+
+Fu, J and Ernst, J. GECSI: Large-scale chromatin state imputation from gene expression
+bioRxiv 2025.10.02.679828; doi: https://doi.org/10.1101/2025.10.02.679828
 
 ## Table of Contents
 
